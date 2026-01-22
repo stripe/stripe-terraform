@@ -3,33 +3,8 @@
 
 The Stripe Terraform Provider enables you to manage Stripe resources using infrastructure as code. Configure products, prices, billing meters, and complex pricing plans with declarative Terraform syntax. Your Stripe infrastructure becomes version controlled, reproducible, and auditable. For API details, see the [Stripe API reference](https://stripe.com/docs/api).
 
+
 ## Quick start
-
-Complete workflow to start using the provider:
-
-```bash
-# 1. Clone and install the provider
-git clone https://github.com/stripe/stripe-terraform.git
-cd stripe-terraform
-make install
-
-# 2. Create your Terraform project
-cd ..
-mkdir my-stripe-config
-cd my-stripe-config
-
-# 3. Set your API key
-export STRIPE_API_KEY="sk_test_..."
-
-# 4. Create a main.tf file (see examples below)
-
-# 5. Initialize and apply
-terraform init
-terraform plan
-terraform apply
-```
-
-## Sample usage
 
 Create a product with a recurring price and a webhook endpoint to receive events:
 
@@ -37,8 +12,8 @@ Create a product with a recurring price and a webhook endpoint to receive events
 terraform {
   required_providers {
     stripe = {
-      source  = "stripe/stripe"
-      version = "0.1.0"
+      source = "stripe/stripe"
+      version = "0.1.3"
     }
   }
 }
@@ -84,6 +59,12 @@ resource "stripe_webhook_endpoint" "payments" {
 output "price_id" {
   value = stripe_price.pro_monthly.id
 }
+```
+
+Set your API Key:
+
+```bash
+export STRIPE_API_KEY="sk_test_..."
 ```
 
 Preview and apply changes:
