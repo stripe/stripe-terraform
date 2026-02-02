@@ -75,6 +75,11 @@ func ResourceCustomer() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"payment_method": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"phone": {
 				Type:        schema.TypeString,
 				Description: "The customer's phone number.",
@@ -306,6 +311,26 @@ func ResourceCustomer() *schema.Resource {
 					},
 				},
 			},
+			"tax_id_data": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "The customer's tax IDs.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:        schema.TypeString,
+							Description: "Type of the tax ID, one of `ad_nrt`, `ae_trn`, `al_tin`, `am_tin`, `ao_tin`, `ar_cuit`, `au_abn`, `au_arn`, `aw_tin`, `az_tin`, `ba_tin`, `bb_tin`, `bd_bin`, `bf_ifu`, `bg_uic`, `bh_vat`, `bj_ifu`, `bo_tin`, `br_cnpj`, `br_cpf`, `bs_tin`, `by_tin`, `ca_bn`, `ca_gst_hst`, `ca_pst_bc`, `ca_pst_mb`, `ca_pst_sk`, `ca_qst`, `cd_nif`, `ch_uid`, `ch_vat`, `cl_tin`, `cm_niu`, `cn_tin`, `co_nit`, `cr_tin`, `cv_nif`, `de_stn`, `do_rcn`, `ec_ruc`, `eg_tin`, `es_cif`, `et_tin`, `eu_oss_vat`, `eu_vat`, `gb_vat`, `ge_vat`, `gn_nif`, `hk_br`, `hr_oib`, `hu_tin`, `id_npwp`, `il_vat`, `in_gst`, `is_vat`, `jp_cn`, `jp_rn`, `jp_trn`, `ke_pin`, `kg_tin`, `kh_tin`, `kr_brn`, `kz_bin`, `la_tin`, `li_uid`, `li_vat`, `ma_vat`, `md_vat`, `me_pib`, `mk_vat`, `mr_nif`, `mx_rfc`, `my_frp`, `my_itn`, `my_sst`, `ng_tin`, `no_vat`, `no_voec`, `np_pan`, `nz_gst`, `om_vat`, `pe_ruc`, `ph_tin`, `ro_tin`, `rs_pib`, `ru_inn`, `ru_kpp`, `sa_vat`, `sg_gst`, `sg_uen`, `si_tin`, `sn_ninea`, `sr_fin`, `sv_nit`, `th_vat`, `tj_tin`, `tr_tin`, `tw_vat`, `tz_vat`, `ua_vat`, `ug_tin`, `us_ein`, `uy_ruc`, `uz_tin`, `uz_vat`, `ve_rif`, `vn_tin`, `za_vat`, `zm_tin`, or `zw_tin`",
+							Required:    true,
+						},
+						"value": {
+							Type:        schema.TypeString,
+							Description: "Value of the tax ID.",
+							Required:    true,
+						},
+					},
+				},
+			},
 		},
 
 		CreateContext: resourceCustomerCreate,
@@ -354,6 +379,9 @@ func resourceCustomerCreate(ctx context.Context, d *schema.ResourceData, meta in
 	}
 	if !d.GetRawConfig().GetAttr("next_invoice_sequence").IsNull() {
 		params.NextInvoiceSequence = stripe.Int64(int64(d.Get("next_invoice_sequence").(int)))
+	}
+	if v, ok := d.Get("payment_method").(string); ok && v != "" {
+		params.PaymentMethod = stripe.String(v)
 	}
 	if v, ok := d.Get("phone").(string); ok && v != "" {
 		params.Phone = stripe.String(v)
@@ -470,6 +498,21 @@ func resourceCustomerCreate(ctx context.Context, d *schema.ResourceData, meta in
 		if val, ok := data["validate_location"].(string); ok && val != "" {
 			params.Tax.ValidateLocation = stripe.String(val)
 		}
+	}
+	if v, ok := d.Get("tax_id_data").([]interface{}); ok && len(v) > 0 {
+		conditions := make([]*stripe.CustomerCreateTaxIDDataParams, len(v))
+		for i, item := range v {
+			data := item.(map[string]interface{})
+			condition := &stripe.CustomerCreateTaxIDDataParams{}
+			if typeVal, ok := data["type"].(string); ok && typeVal != "" {
+				condition.Type = stripe.String(typeVal)
+			}
+			if value, ok := data["value"].(string); ok && value != "" {
+				condition.Value = stripe.String(value)
+			}
+			conditions[i] = condition
+		}
+		params.TaxIDData = conditions
 	}
 	customer, err := c.V1Customers.Create(ctx, params)
 	if err != nil {

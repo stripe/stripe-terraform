@@ -199,6 +199,65 @@ func ResourcePrice() *schema.Resource {
 					},
 				},
 			},
+			"product_data": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "These fields can be used to create a new product that this price will belong to.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"active": {
+							Type:        schema.TypeBool,
+							Description: "Whether the product is currently available for purchase. Defaults to `true`.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"id": {
+							Type:        schema.TypeString,
+							Description: "The identifier for the product. Must be unique. If not provided, an identifier will be randomly generated.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"metadata": {
+							Type:        schema.TypeMap,
+							Description: "Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "The product's name, meant to be displayable to the customer.",
+							Required:    true,
+							ForceNew:    true,
+						},
+						"statement_descriptor": {
+							Type:        schema.TypeString,
+							Description: "An arbitrary string to be displayed on your customer's credit card or bank statement. While most banks display this information consistently, some may display it incorrectly or not at all. This may be up to 22 characters. The statement description may not include `<`, `>`, `\\`, `\\\"`, `'` characters, and will appear on your customer's statement in capital letters. Non-ASCII characters are automatically stripped.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"tax_code": {
+							Type:        schema.TypeString,
+							Description: "A [tax code](https://stripe.com/docs/tax/tax-categories) ID.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"unit_label": {
+							Type:        schema.TypeString,
+							Description: "A label that represents units of this product. When set, this will be included in customers' receipts, invoices, Checkout, and the customer portal.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+					},
+				},
+			},
 			"recurring": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -347,6 +406,28 @@ func resourcePriceCreate(ctx context.Context, d *schema.ResourceData, meta inter
 			params.CustomUnitAmount.Preset = stripe.Int64(int64(val))
 		}
 		params.CustomUnitAmount.Enabled = stripe.Bool(true)
+	}
+	if v, ok := d.Get("product_data").([]interface{}); ok && len(v) > 0 {
+		data := v[0].(map[string]interface{})
+		params.ProductData = &stripe.PriceCreateProductDataParams{}
+		if val, ok := data["active"].(bool); ok {
+			params.ProductData.Active = stripe.Bool(val)
+		}
+		if val, ok := data["id"].(string); ok && val != "" {
+			params.ProductData.ID = stripe.String(val)
+		}
+		if val, ok := data["name"].(string); ok && val != "" {
+			params.ProductData.Name = stripe.String(val)
+		}
+		if val, ok := data["statement_descriptor"].(string); ok && val != "" {
+			params.ProductData.StatementDescriptor = stripe.String(val)
+		}
+		if val, ok := data["tax_code"].(string); ok && val != "" {
+			params.ProductData.TaxCode = stripe.String(val)
+		}
+		if val, ok := data["unit_label"].(string); ok && val != "" {
+			params.ProductData.UnitLabel = stripe.String(val)
+		}
 	}
 	if v, ok := d.Get("recurring").([]interface{}); ok && len(v) > 0 {
 		data := v[0].(map[string]interface{})

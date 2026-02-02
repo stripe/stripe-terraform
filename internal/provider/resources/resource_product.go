@@ -94,6 +94,186 @@ func ResourceProduct() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"default_price_data": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "Data used to generate a new [Price](https://stripe.com/docs/api/prices) object. This Price will be set as the default price for this product.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"currency": {
+							Type:        schema.TypeString,
+							Description: "Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).",
+							Required:    true,
+							ForceNew:    true,
+						},
+						"currency_options": {
+							Type:        schema.TypeList,
+							Description: "Prices defined in each available currency option. Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:     schema.TypeString,
+										Required: true,
+										ForceNew: true,
+									},
+									"custom_unit_amount": {
+										Type:        schema.TypeList,
+										MaxItems:    1,
+										Optional:    true,
+										ForceNew:    true,
+										Description: "When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.",
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"enabled": {
+													Type:        schema.TypeBool,
+													Description: "Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.",
+													Required:    true,
+													ForceNew:    true,
+												},
+												"maximum": {
+													Type:        schema.TypeInt,
+													Description: "The maximum unit amount the customer can specify for this item.",
+													Optional:    true,
+													ForceNew:    true,
+												},
+												"minimum": {
+													Type:        schema.TypeInt,
+													Description: "The minimum unit amount the customer can specify for this item. Must be at least the minimum charge amount.",
+													Optional:    true,
+													ForceNew:    true,
+												},
+												"preset": {
+													Type:        schema.TypeInt,
+													Description: "The starting unit amount which can be updated by the customer.",
+													Optional:    true,
+													ForceNew:    true,
+												},
+											},
+										},
+									},
+									"tax_behavior": {
+										Type:        schema.TypeString,
+										Description: "Only required if a [default tax behavior](https://stripe.com/docs/tax/products-prices-tax-categories-tax-behavior#setting-a-default-tax-behavior-(recommended)) was not provided in the Stripe Tax settings. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.",
+										Optional:    true,
+										Computed:    true,
+										ForceNew:    true,
+									},
+									"tiers": {
+										Type:        schema.TypeList,
+										Description: "Each element represents a pricing tier. This parameter requires `billing_scheme` to be set to `tiered`. See also the documentation for `billing_scheme`.",
+										Optional:    true,
+										Computed:    true,
+										ForceNew:    true,
+										Elem:        &schema.Schema{Type: schema.TypeList},
+									},
+									"unit_amount": {
+										Type:        schema.TypeInt,
+										Description: "A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge.",
+										Optional:    true,
+										Computed:    true,
+										ForceNew:    true,
+									},
+								},
+							},
+						},
+						"custom_unit_amount": {
+							Type:        schema.TypeList,
+							MaxItems:    1,
+							Optional:    true,
+							ForceNew:    true,
+							Description: "When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"enabled": {
+										Type:        schema.TypeBool,
+										Description: "Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.",
+										Required:    true,
+										ForceNew:    true,
+									},
+									"maximum": {
+										Type:        schema.TypeInt,
+										Description: "The maximum unit amount the customer can specify for this item.",
+										Optional:    true,
+										ForceNew:    true,
+									},
+									"minimum": {
+										Type:        schema.TypeInt,
+										Description: "The minimum unit amount the customer can specify for this item. Must be at least the minimum charge amount.",
+										Optional:    true,
+										ForceNew:    true,
+									},
+									"preset": {
+										Type:        schema.TypeInt,
+										Description: "The starting unit amount which can be updated by the customer.",
+										Optional:    true,
+										ForceNew:    true,
+									},
+								},
+							},
+						},
+						"metadata": {
+							Type:        schema.TypeMap,
+							Description: "Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+						"recurring": {
+							Type:        schema.TypeList,
+							MaxItems:    1,
+							Optional:    true,
+							ForceNew:    true,
+							Description: "The recurring components of a price such as `interval` and `interval_count`.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"interval": {
+										Type:        schema.TypeString,
+										Description: "Specifies billing frequency. Either `day`, `week`, `month` or `year`.",
+										Required:    true,
+										ForceNew:    true,
+										ValidateDiagFunc: validation.ToDiagFunc(validation.StringInSlice([]string{
+											"day",
+											"month",
+											"week",
+											"year",
+										}, false)),
+									},
+									"interval_count": {
+										Type:        schema.TypeInt,
+										Description: "The number of intervals between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of three years interval allowed (3 years, 36 months, or 156 weeks).",
+										Optional:    true,
+										ForceNew:    true,
+									},
+								},
+							},
+						},
+						"tax_behavior": {
+							Type:        schema.TypeString,
+							Description: "Only required if a [default tax behavior](https://stripe.com/docs/tax/products-prices-tax-categories-tax-behavior#setting-a-default-tax-behavior-(recommended)) was not provided in the Stripe Tax settings. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+							ValidateDiagFunc: validation.ToDiagFunc(validation.StringInSlice([]string{
+								"exclusive",
+								"inclusive",
+								"unspecified",
+							}, false)),
+						},
+						"unit_amount": {
+							Type:        schema.TypeInt,
+							Description: "A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge. One of `unit_amount`, `unit_amount_decimal`, or `custom_unit_amount` is required.",
+							Optional:    true,
+							Computed:    true,
+							ForceNew:    true,
+						},
+					},
+				},
+			},
 			"package_dimensions": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -196,6 +376,61 @@ func resourceProductCreate(ctx context.Context, d *schema.ResourceData, meta int
 	}
 	if v, ok := d.Get("url").(string); ok && v != "" {
 		params.URL = stripe.String(v)
+	}
+	if v, ok := d.Get("default_price_data").([]interface{}); ok && len(v) > 0 {
+		data := v[0].(map[string]interface{})
+		params.DefaultPriceData = &stripe.ProductCreateDefaultPriceDataParams{}
+		if val, ok := data["currency"].(string); ok && val != "" {
+			params.DefaultPriceData.Currency = stripe.String(val)
+		}
+		if v, ok := data["currency_options"].([]interface{}); ok && len(v) > 0 {
+			params.DefaultPriceData.CurrencyOptions = make(map[string]*stripe.ProductCreateDefaultPriceDataCurrencyOptionsParams)
+			for _, raw := range v {
+				if item, ok := raw.(map[string]interface{}); ok {
+					key, _ := item["key"].(string)
+					if key == "" {
+						continue
+					}
+					entry := &stripe.ProductCreateDefaultPriceDataCurrencyOptionsParams{}
+					if val, ok := item["tax_behavior"].(string); ok && val != "" {
+						entry.TaxBehavior = stripe.String(val)
+					}
+					if val, ok := item["unit_amount"].(int); ok {
+						entry.UnitAmount = stripe.Int64(int64(val))
+					}
+					params.DefaultPriceData.CurrencyOptions[key] = entry
+				}
+			}
+		}
+		if v, ok := data["custom_unit_amount"].([]interface{}); ok && len(v) > 0 {
+			nestedData0 := v[0].(map[string]interface{})
+			params.DefaultPriceData.CustomUnitAmount = &stripe.ProductCreateDefaultPriceDataCustomUnitAmountParams{}
+			if val, ok := nestedData0["maximum"].(int); ok && val > 0 {
+				params.DefaultPriceData.CustomUnitAmount.Maximum = stripe.Int64(int64(val))
+			}
+			if val, ok := nestedData0["minimum"].(int); ok && val > 0 {
+				params.DefaultPriceData.CustomUnitAmount.Minimum = stripe.Int64(int64(val))
+			}
+			if val, ok := nestedData0["preset"].(int); ok && val > 0 {
+				params.DefaultPriceData.CustomUnitAmount.Preset = stripe.Int64(int64(val))
+			}
+		}
+		if v, ok := data["recurring"].([]interface{}); ok && len(v) > 0 {
+			nestedData0 := v[0].(map[string]interface{})
+			params.DefaultPriceData.Recurring = &stripe.ProductCreateDefaultPriceDataRecurringParams{}
+			if val, ok := nestedData0["interval"].(string); ok && val != "" {
+				params.DefaultPriceData.Recurring.Interval = stripe.String(val)
+			}
+			if val, ok := nestedData0["interval_count"].(int); ok && val > 0 {
+				params.DefaultPriceData.Recurring.IntervalCount = stripe.Int64(int64(val))
+			}
+		}
+		if val, ok := data["tax_behavior"].(string); ok && val != "" {
+			params.DefaultPriceData.TaxBehavior = stripe.String(val)
+		}
+		if val, ok := data["unit_amount"].(int); ok && val > 0 {
+			params.DefaultPriceData.UnitAmount = stripe.Int64(int64(val))
+		}
 	}
 	if v, ok := d.Get("package_dimensions").([]interface{}); ok && len(v) > 0 {
 		data := v[0].(map[string]interface{})

@@ -150,6 +150,13 @@ func ResourceWebhookEndpoint() *schema.Resource {
 					"2025-11-17.clover",
 				}, false)),
 			},
+			"connect": {
+				Type:        schema.TypeBool,
+				Description: "Whether this endpoint should receive events from connected accounts (`true`), or from your account (`false`). Defaults to `false`.",
+				Optional:    true,
+				Default:     false,
+				ForceNew:    true,
+			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -194,6 +201,7 @@ func resourceWebhookEndpointCreate(ctx context.Context, d *schema.ResourceData, 
 	if v, ok := d.Get("api_version").(string); ok && v != "" {
 		params.APIVersion = stripe.String(v)
 	}
+	params.Connect = stripe.Bool(d.Get("connect").(bool))
 	if v, ok := d.Get("description").(string); ok && v != "" {
 		params.Description = stripe.String(v)
 	}
