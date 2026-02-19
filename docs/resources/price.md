@@ -29,6 +29,7 @@ Prices define the unit cost, currency, and (optional) billing cycle for both rec
 - `metadata` (Map of String) Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
 - `nickname` (String) A brief description of the price, hidden from customers.
 - `product` (String) The ID of the [Product](https://docs.stripe.com/api/products) that this [Price](https://docs.stripe.com/api/prices) will belong to.
+- `product_data` (Block List, Max: 1) These fields can be used to create a new product that this price will belong to. (see [below for nested schema](#nestedblock--product_data))
 - `recurring` (Block List, Max: 1) The recurring components of a price such as `interval` and `usage_type`. (see [below for nested schema](#nestedblock--recurring))
 - `tax_behavior` (String) Only required if a [default tax behavior](https://stripe.com/docs/tax/products-prices-tax-categories-tax-behavior#setting-a-default-tax-behavior-(recommended)) was not provided in the Stripe Tax settings. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.
 - `tiers` (Block List) Each element represents a pricing tier. This parameter requires `billing_scheme` to be set to `tiered`. See also the documentation for `billing_scheme`. (see [below for nested schema](#nestedblock--tiers))
@@ -76,6 +77,23 @@ Optional:
 - `maximum` (Number) The maximum unit amount the customer can specify for this item.
 - `minimum` (Number) The minimum unit amount the customer can specify for this item. Must be at least the minimum charge amount.
 - `preset` (Number) The starting unit amount which can be updated by the customer.
+
+
+<a id="nestedblock--product_data"></a>
+### Nested Schema for `product_data`
+
+Required:
+
+- `name` (String) The product's name, meant to be displayable to the customer.
+
+Optional:
+
+- `active` (Boolean) Whether the product is currently available for purchase. Defaults to `true`.
+- `id` (String) The identifier for the product. Must be unique. If not provided, an identifier will be randomly generated.
+- `metadata` (Map of String) Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+- `statement_descriptor` (String) An arbitrary string to be displayed on your customer's credit card or bank statement. While most banks display this information consistently, some may display it incorrectly or not at all. This may be up to 22 characters. The statement description may not include `<`, `>`, `\`, `\"`, `'` characters, and will appear on your customer's statement in capital letters. Non-ASCII characters are automatically stripped.
+- `tax_code` (String) A [tax code](https://stripe.com/docs/tax/tax-categories) ID.
+- `unit_label` (String) A label that represents units of this product. When set, this will be included in customers' receipts, invoices, Checkout, and the customer portal.
 
 
 <a id="nestedblock--recurring"></a>

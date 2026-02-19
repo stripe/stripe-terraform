@@ -23,6 +23,7 @@ You can configure [webhook endpoints](https://docs.stripe.com/webhooks/) via the
 ### Optional
 
 - `api_version` (String) Events sent to this endpoint will be generated with this Stripe Version instead of your account's default Stripe Version.
+- `connect` (Boolean) Whether this endpoint should receive events from connected accounts (`true`), or from your account (`false`). Defaults to `false`.
 - `description` (String)
 - `metadata` (Map of String)
 

@@ -22,6 +22,7 @@ Products describe the specific goods or services you offer to your customers. Fo
 ### Optional
 
 - `active` (Boolean) Whether the product is currently available for purchase. Defaults to `true`.
+- `default_price_data` (Block List, Max: 1) Data used to generate a new [Price](https://stripe.com/docs/api/prices) object. This Price will be set as the default price for this product. (see [below for nested schema](#nestedblock--default_price_data))
 - `description` (String) The product's description, meant to be displayable to the customer. Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
 - `images` (List of String) A list of up to 8 URLs of images for this product, meant to be displayable to the customer.
 - `marketing_features` (Block List) A list of up to 15 marketing features for this product. These are displayed in [pricing tables](https://stripe.com/docs/payments/checkout/pricing-table). (see [below for nested schema](#nestedblock--marketing_features))
@@ -37,6 +38,78 @@ Products describe the specific goods or services you offer to your customers. Fo
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+<a id="nestedblock--default_price_data"></a>
+### Nested Schema for `default_price_data`
+
+Required:
+
+- `currency` (String) Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be a [supported currency](https://stripe.com/docs/currencies).
+
+Optional:
+
+- `currency_options` (Block List) Prices defined in each available currency option. Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies). (see [below for nested schema](#nestedblock--default_price_data--currency_options))
+- `custom_unit_amount` (Block List, Max: 1) When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links. (see [below for nested schema](#nestedblock--default_price_data--custom_unit_amount))
+- `metadata` (Map of String) Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to `metadata`.
+- `recurring` (Block List, Max: 1) The recurring components of a price such as `interval` and `interval_count`. (see [below for nested schema](#nestedblock--default_price_data--recurring))
+- `tax_behavior` (String) Only required if a [default tax behavior](https://stripe.com/docs/tax/products-prices-tax-categories-tax-behavior#setting-a-default-tax-behavior-(recommended)) was not provided in the Stripe Tax settings. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.
+- `unit_amount` (Number) A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge. One of `unit_amount`, `unit_amount_decimal`, or `custom_unit_amount` is required.
+
+<a id="nestedblock--default_price_data--currency_options"></a>
+### Nested Schema for `default_price_data.currency_options`
+
+Required:
+
+- `key` (String)
+
+Optional:
+
+- `custom_unit_amount` (Block List, Max: 1) When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links. (see [below for nested schema](#nestedblock--default_price_data--currency_options--custom_unit_amount))
+- `tax_behavior` (String) Only required if a [default tax behavior](https://stripe.com/docs/tax/products-prices-tax-categories-tax-behavior#setting-a-default-tax-behavior-(recommended)) was not provided in the Stripe Tax settings. Specifies whether the price is considered inclusive of taxes or exclusive of taxes. One of `inclusive`, `exclusive`, or `unspecified`. Once specified as either `inclusive` or `exclusive`, it cannot be changed.
+- `tiers` (List of List of String) Each element represents a pricing tier. This parameter requires `billing_scheme` to be set to `tiered`. See also the documentation for `billing_scheme`.
+- `unit_amount` (Number) A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge.
+
+<a id="nestedblock--default_price_data--currency_options--custom_unit_amount"></a>
+### Nested Schema for `default_price_data.currency_options.custom_unit_amount`
+
+Required:
+
+- `enabled` (Boolean) Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+
+Optional:
+
+- `maximum` (Number) The maximum unit amount the customer can specify for this item.
+- `minimum` (Number) The minimum unit amount the customer can specify for this item. Must be at least the minimum charge amount.
+- `preset` (Number) The starting unit amount which can be updated by the customer.
+
+
+
+<a id="nestedblock--default_price_data--custom_unit_amount"></a>
+### Nested Schema for `default_price_data.custom_unit_amount`
+
+Required:
+
+- `enabled` (Boolean) Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+
+Optional:
+
+- `maximum` (Number) The maximum unit amount the customer can specify for this item.
+- `minimum` (Number) The minimum unit amount the customer can specify for this item. Must be at least the minimum charge amount.
+- `preset` (Number) The starting unit amount which can be updated by the customer.
+
+
+<a id="nestedblock--default_price_data--recurring"></a>
+### Nested Schema for `default_price_data.recurring`
+
+Required:
+
+- `interval` (String) Specifies billing frequency. Either `day`, `week`, `month` or `year`.
+
+Optional:
+
+- `interval_count` (Number) The number of intervals between subscription billings. For example, `interval=month` and `interval_count=3` bills every 3 months. Maximum of three years interval allowed (3 years, 36 months, or 156 weeks).
+
+
 
 <a id="nestedblock--marketing_features"></a>
 ### Nested Schema for `marketing_features`
