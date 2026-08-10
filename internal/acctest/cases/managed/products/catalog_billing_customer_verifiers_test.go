@@ -127,6 +127,7 @@ type eventDestinationExpectations struct {
 	ExpectedAWSAccountID    string
 	CheckWebhookEndpointURL bool
 	ExpectedWebhookURLParts []string
+	CheckSigningSecret      bool
 }
 
 type billingMeterExpectations struct {
@@ -770,6 +771,22 @@ func verifyEventDestination(
 			if eventDestination.WebhookEndpoint.URL == "" {
 				return fmt.Errorf(
 					"remote %s.webhook_endpoint.url unexpectedly empty",
+					expect.Address,
+				)
+			}
+		}
+		if expect.CheckSigningSecret {
+			signingSecret, err := runner.ResourceAttribute(
+				state,
+				expect.Address,
+				"webhook_endpoint.0.signing_secret",
+			)
+			if err != nil {
+				return err
+			}
+			if signingSecret == "" {
+				return fmt.Errorf(
+					"state %s.webhook_endpoint.0.signing_secret unexpectedly empty",
 					expect.Address,
 				)
 			}

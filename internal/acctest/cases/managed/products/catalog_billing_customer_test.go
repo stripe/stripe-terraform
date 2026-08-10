@@ -1294,6 +1294,7 @@ func TestAccManagedV2CoreEventDestinationBasic(t *testing.T) {
 					"v1.billing.meter.error_report_triggered",
 				},
 				CheckWebhookEndpointURL: true,
+				CheckSigningSecret:      true,
 				ExpectedWebhookURLParts: []string{
 					"https://example.com/sdk-codegen/event-destination/",
 				},
@@ -1332,6 +1333,7 @@ func TestAccManagedV2CoreEventDestinationBasic(t *testing.T) {
 					"v1.billing.meter.error_report_triggered",
 				},
 				CheckWebhookEndpointURL: true,
+				CheckSigningSecret:      true,
 				ExpectedWebhookURLParts: []string{
 					"https://example.com/sdk-codegen/event-destination/",
 					"/updated",
