@@ -27,7 +27,7 @@ resource "stripe_v2_core_event_destination" "webhook" {
   description   = "sdk-codegen webhook destination"
   type          = "webhook_endpoint"
   event_payload = "thin"
-  include       = ["webhook_endpoint.signing_secret", "webhook_endpoint.url"]
+  include       = ["webhook_endpoint.url"]
 
   enabled_events = [
     "v1.billing.meter.error_report_triggered",

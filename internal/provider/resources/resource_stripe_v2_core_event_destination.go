@@ -1156,6 +1156,8 @@ func (r *V2CoreEventDestinationResource) Create(ctx context.Context, req resourc
 		return
 	}
 
+	params.Include = append(params.Include, stripe.String("webhook_endpoint.signing_secret"))
+
 	obj, err := r.client.V2CoreEventDestinations.Create(ctx, params)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating V2CoreEventDestination", err.Error())
