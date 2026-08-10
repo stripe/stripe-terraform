@@ -87,6 +87,11 @@ func (p *StripeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		stripeAccount = os.Getenv("STRIPE_ACCOUNT")
 	}
 
+	stripe.SetAppInfo(&stripe.AppInfo{
+		Name:    "stripe-terraform",
+		Version: p.version,
+	})
+
 	var client *stripe.Client
 	if stripeAccount != "" {
 		backends := stripe.NewBackendsWithConfig(&stripe.BackendConfig{
