@@ -1,5 +1,7 @@
 //go:build tools
 
+// File generated from our OpenAPI spec
+
 package main
 
 import (
